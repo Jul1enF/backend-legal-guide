@@ -3,6 +3,10 @@ var router = express.Router();
 
 const Article = require('../models/articles')
 
+const jwt = require('jsonwebtoken')
+const secretToken = process.env.JWT_SECRET_KEY
+const User = require('../models/users')
+
 const mongoose = require('mongoose')
 const connectionString = process.env.CONNECTION_STRING
 
@@ -42,14 +46,14 @@ router.post('/save-article', async (req, res) => {
         await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
 
 
-        const { _id, createdAt, articleData } = req.body
+        const { _id, jwtToken, createdAt, articleData } = req.body
 
-        console.log("Article data :", articleData)
-        // const decryptedToken = jwt.verify(jwtToken, secretToken)
-        // let user = await User.findOne({ token: decryptedToken.token })
+        
+        const decryptedToken = jwt.verify(jwtToken, secretToken)
+        let user = await User.findOne({ token: decryptedToken.token })
 
-        // // Vérification que l'utilisateur postant est bien admin
-        // if (!user || !user.is_admin) { return res.json({ result: false, error: 'Utilisateur non trouvé ou non autorisé. Essayez en vous reconnectant.' }) }
+        // Vérification que l'utilisateur postant est bien admin
+        if (!user || !user.is_admin) { return res.json({ result: false, error: 'Utilisateur non trouvé ou non autorisé. Essayez en vous reconnectant.' }) }
 
 
 
