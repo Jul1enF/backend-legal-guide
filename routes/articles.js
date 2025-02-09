@@ -44,7 +44,7 @@ router.post('/save-article', async (req, res) => {
 
         const { _id, createdAt, articleData } = req.body
 
-
+        console.log("Article data :", articleData)
         // const decryptedToken = jwt.verify(jwtToken, secretToken)
         // let user = await User.findOne({ token: decryptedToken.token })
 
