@@ -9,8 +9,12 @@ var usersRouter = require('./routes/users');
 var articlesRouter = require('./routes/articles')
 var userModificationsRouter = require('./routes/userModifications')
 var calendarRouter = require('./routes/calendar')
+var emergenciesRouter = require('./routes/emergencies')
 
 var app = express();
+
+const fileUpload = require('express-fileupload');
+app.use(fileUpload());
 
 const cors = require('cors')
 app.use(cors())
@@ -25,5 +29,6 @@ app.use('/users', usersRouter);
 app.use('/articles', articlesRouter);
 app.use('/userModifications', userModificationsRouter);
 app.use('/calendar', calendarRouter)
+app.use('/emergencies', emergenciesRouter)
 
 module.exports = app;
