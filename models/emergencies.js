@@ -10,7 +10,7 @@ const emergencySchema = mongoose.Schema({
     media_type : String,
     connected : Boolean,
     located : Boolean,
-    ermergency_reason : String,
+    emergency_reason : String,
     createdAt : Date,
     user_location : Array,
 })

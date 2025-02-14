@@ -4,7 +4,7 @@ var router = express.Router();
 const Article = require('../models/articles')
 
 const jwt = require('jsonwebtoken')
-const secretToken = process.env.JWT_SECRET_KEY
+const secretKey = process.env.JWT_SECRET_KEY
 const User = require('../models/users')
 
 const mongoose = require('mongoose')
@@ -49,7 +49,7 @@ router.post('/save-article', async (req, res) => {
         const { _id, jwtToken, createdAt, articleData } = req.body
 
         
-        const decryptedToken = jwt.verify(jwtToken, secretToken)
+        const decryptedToken = jwt.verify(jwtToken, secretKey)
         let user = await User.findOne({ token: decryptedToken.token })
 
         // Vérification que l'utilisateur postant est bien admin

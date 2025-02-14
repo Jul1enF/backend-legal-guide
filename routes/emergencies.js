@@ -43,7 +43,7 @@ router.post('/new-emergency/:emergencyData', async (req, res) => {
 
         const decryptedData = jwt.verify(req.params.emergencyData, publicKey)
 
-        const { user_firstname, user_name, user_email, user_phone, connected, media_link, media_type, ermergency_reason, mediaExtension, mediaMimeType, user_location } = decryptedData
+        const { user_firstname, user_name, user_email, user_phone, connected, media_link, media_type, emergency_reason, mediaExtension, mediaMimeType, user_location } = decryptedData
 
         console.log("DECRYPTED DATA", decryptedData)
         // Upload à Firebase si média présent
@@ -70,7 +70,7 @@ router.post('/new-emergency/:emergencyData', async (req, res) => {
         const createdAt = new Date()
 
         const newEmergency = new Emergency({
-            user_firstname, user_name, user_email, user_phone, connected, media_url, media_type, media_name, ermergency_reason, createdAt, user_location, located: user_location.length > 0 ? true : false
+            user_firstname, user_name, user_email, user_phone, connected, media_url, media_type, media_name, emergency_reason, createdAt, user_location, located: user_location.length > 0 ? true : false
         })
 
         const savedEmergency = await newEmergency.save()
@@ -107,15 +107,15 @@ router.get('/check-emergency/:emergency_id', async (req, res) => {
 
         let requestDeleted = false
 
-        if (emergency_id){
-            const emergency = await Emergency.findOne({_id : emergency_id})
+        if (emergency_id) {
+            const emergency = await Emergency.findOne({ _id: emergency_id })
 
-            if (!emergency){
+            if (!emergency) {
                 requestDeleted = true
             }
         }
         console.log("deleted", requestDeleted)
-        res.json({result : true, requestDeleted})
+        res.json({ result: true, requestDeleted })
 
 
     } catch (err) {
@@ -136,12 +136,12 @@ router.delete('/suppress-emergency/:_id', async (req, res) => {
         await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
 
         const { _id } = req.params
-        
+
 
         // Vérification de l'éventuelle présence d'un média enregistré sur firebase pour le supprimer
-        const emergency = await Emergency.findOne({_id})
+        const emergency = await Emergency.findOne({ _id })
 
-        if (emergency.media_url){
+        if (emergency.media_url) {
             const mediaRef = ref(storage, `userMedias/${emergency.media_name}`)
 
             const mediaSupress = await deleteObject(mediaRef)
@@ -151,14 +151,14 @@ router.delete('/suppress-emergency/:_id', async (req, res) => {
         // Suppression du document emergencies
         const suppress = await Emergency.deleteOne({ _id })
 
-        if (suppress.deletedCount !== 1){
-            return res.json({result : false})
+        if (suppress.deletedCount !== 1) {
+            return res.json({ result: false })
         }
 
         // Suppression de la clef étrangère d'un document utilisateur si celui existe
-        const update = await User.updateOne({emergency : _id}, { $unset: { emergency: _id } })
+        const update = await User.updateOne({ emergency: _id }, { $unset: { emergency: _id } })
 
-        res.json({result : true})
+        res.json({ result: true })
 
     } catch (err) {
         console.log(err)
@@ -169,6 +169,33 @@ router.delete('/suppress-emergency/:_id', async (req, res) => {
 
 
 
+// Route pour obtenir toutes les demandes d'urgences
+
+router.get('/get-emergencies/:jwtToken', async (req, res) => {
+    try {
+        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+
+        const { jwtToken } = req.params
+
+        const decryptedToken = jwt.verify(jwtToken, secretKey)
+        let user = await User.findOne({ token: decryptedToken.token })
+
+        // Vérification que l'utilisateur postant est bien admin
+        if (!user || !user.is_admin) { return res.json({ result: false, error: 'Données non téléchargées. Utilisateur non autorisé. Essayez en vous reconnectant.' }) }
+
+        let emergencies = await Emergency.find()
+
+        if (!emergencies){
+            emergencies = []
+        }
+
+        res.json({ result: true, emergencies })
+
+    } catch (err) {
+        console.log(err)
+        res.json({ result: false, err })
+    }
+})
 
 
 
