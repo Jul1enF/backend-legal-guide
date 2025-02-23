@@ -4,6 +4,7 @@ const articleSchema = mongoose.Schema({
     title : String,
     sub_category : String,
     img_link : String,
+    img_name : String,
     img_margin_top : Number,
     img_margin_left : Number,
     img_zoom : Number,

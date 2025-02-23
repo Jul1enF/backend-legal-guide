@@ -9,7 +9,6 @@ const secretKey = process.env.JWT_SECRET_KEY
 const publicKey = process.env.JWT_PUBLIC_KEY
 
 const uniqid = require('uniqid');
-// const cloudinary = require('cloudinary').v2;
 
 // const {sendNotification} = require('../modules/sendNotification')
 
@@ -45,7 +44,6 @@ router.post('/new-emergency/:emergencyData', async (req, res) => {
 
         const { user_firstname, user_name, user_email, user_phone, connected, media_link, media_type, emergency_reason, mediaExtension, mediaMimeType, user_location } = decryptedData
 
-        console.log("DECRYPTED DATA", decryptedData)
         // Upload à Firebase si média présent
 
         let media_url = ""
@@ -54,13 +52,13 @@ router.post('/new-emergency/:emergencyData', async (req, res) => {
         if (media_link) {
             media_name = `${uniqid()}.${mediaExtension}`
 
-            const userMediaRef = ref(storage, `userMedias/${media_name}`)
+            const emergencyMediaRef = ref(storage, `emergenciesMedias/${media_name}`)
 
             const metadata = {
                 contentType: mediaMimeType,
             }
 
-            const uploadedMedia = await uploadBytes(userMediaRef, req.files.userMedia.data, metadata);
+            const uploadedMedia = await uploadBytes(emergencyMediaRef, req.files.emergencyMedia.data, metadata);
 
             media_url = await getDownloadURL(uploadedMedia.ref)
         }
@@ -142,7 +140,7 @@ router.delete('/suppress-emergency/:_id', async (req, res) => {
         const emergency = await Emergency.findOne({ _id })
 
         if (emergency.media_url) {
-            const mediaRef = ref(storage, `userMedias/${emergency.media_name}`)
+            const mediaRef = ref(storage, `emergenciesMedias/${emergency.media_name}`)
 
             const mediaSupress = await deleteObject(mediaRef)
         }
