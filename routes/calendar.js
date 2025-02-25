@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
+const {formatCalendarEvents}= require('../modules/formatCalendarEvents')
+
 const { google } = require('googleapis');
 
 
@@ -36,14 +38,23 @@ router.get('/getEvents', async (req, res) => {
         });
 
         if (result.data.items.length) {
-            res.json({ events: result.data.items })
+            // Mise en forme pour react calendar
+
+            const {items} = result.data
+
+            const formatedEvents = formatCalendarEvents(items)
+
+            const {events, markers} = formatedEvents
+
+            res.json({ result : true, events, markers })
+            // console.log("EVENTS", events)
         } else {
-            res.json({ message: 'No upcoming events found.' })
+            res.json({ result :false, message: 'No upcoming events found.' })
         }
 
     } catch (err) {
         console.log("err :", err)
-        res.json({ err })
+        res.json({ err, result :false })
     }
 
 })
