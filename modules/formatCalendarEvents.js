@@ -3,19 +3,18 @@ const moment = require('moment')
 
 const formatCalendarEvents = (items) => {
 
-    let events = []
+    let events = {}
     let markers = {}
 
 
     // Fonction pour ajouter des évenèments et des markers pour une période/ un évènement de plusieurs jours
 
-    const addDayEvent = (eventData, marker, i, numberOfDays) => {
-        let newEventData = { ...eventData }
+    const addDayEvent = (event, marker, i, numberOfDays) => {
+        let newEvent = { ...event }
         let newMarker = { ...marker }
-        let newEventDay = {title : "", data : [newEventData]}
 
         // Ce n'est plus le premier jour
-        newEventData.startingDay = false
+        newEvent.startingDay = false
         // Modification sur marker de période numéro 1 ou 2
         if (newMarker.periodMarker2) {
             newMarker.startingDay2 = false
@@ -24,19 +23,18 @@ const formatCalendarEvents = (items) => {
         }
 
 
-        const newStartingDate = moment(newEventData.startingDate).add(i, 'days').format('YYYY-MM-DD')
-        const newId = eventData.id + i.toString()
-        newEventData.id = newId
+        const newStartingDate = moment(newEvent.startingDate).add(i, 'days').format('YYYY-MM-DD')
+        const newId = event.id + i.toString()
+        newEvent.id = newId
 
 
-        newEventData.startingDate = newStartingDate
-        newEventDay.title = newStartingDate
+        newEvent.startingDate = newStartingDate
 
-        // On détermine si c'est le dernier jour de la période ou s'il est au milieu
+        // On détermine si c'est le dernier jour de la période ou s'il est au miliei
         if (i !== numberOfDays) {
-            newEventData.middleDay = true
+            newEvent.middleDay = true
         } else {
-            newEventData.endingDay = true
+            newEvent.endingDay = true
             // Modification sur marker de période numéro 1 ou 2
             if (newMarker.periodMarker2) {
                 newMarker.endingDay2 = true
@@ -47,18 +45,11 @@ const formatCalendarEvents = (items) => {
 
 
         // Ajout du nouvel évènement
-        if (events.some(e=> e.title === newStartingDate)) {
-            events = events.map(e=>{
-                if (e.title === newStartingDate){
-                    e.data.push(newEventData)
-                }
-                return e
-            })
+        if (events[newStartingDate]) {
+            events[newStartingDate].push(newEvent)
         } else {
-            events.push(newEventDay)
+            events[newStartingDate] = [newEvent]
         }
-
-
 
         // Ajout du nouveau marqueur
         if (markers[newStartingDate]?.marked || markers[newStartingDate]?.periodMarker || markers[newStartingDate]?.periodMarker2) {
@@ -74,34 +65,29 @@ const formatCalendarEvents = (items) => {
 
     // Boucle sur tous les évènements reçu de Google Calendar
     for (let item of items) {
-        let eventData = {}
-        let eventDay = {data : [eventData], title :""}
+        let event = {}
         let marker = {}
 
         const startingDate = item.start.dateTime ? moment(item.start.dateTime).format('YYYY-MM-DD') : item.start.date
-
         const startingTime = item.start.dateTime ? moment(item.start.dateTime).format('HH:mm') : ""
 
         const endingDate = item.end.dateTime ? moment(item.end.dateTime).format('YYYY-MM-DD') : moment(item.end.date).subtract(1, 'days').format('YYYY-MM-DD')
-
         const endingTime = item.end.dateTime ? moment(item.end.dateTime).format('HH:mm') : ""
 
         const allDayEvent = startingTime ? false : true
 
         const periodEvent = startingDate === endingDate ? false : true
 
-        eventData.title = item.summary
-        eventData.description = item.description
-        eventData.location = item.location
-        eventData.startingDate = startingDate
-        eventData.startingTime = startingTime
-        eventData.endingDate = endingDate
-        eventData.endingTime = endingTime
-        eventData.periodEvent = periodEvent
-        eventData.allDayEvent = allDayEvent
-        eventData.id = item.id
-
-        eventDay.title = startingDate
+        event.title = item.summary
+        event.description = item.description
+        event.location = item.location
+        event.startingDate = startingDate
+        event.startingTime = startingTime
+        event.endingDate = endingDate
+        event.endingTime = endingTime
+        event.periodEvent = periodEvent
+        event.allDayEvent = allDayEvent
+        event.id = item.id
 
 
 
@@ -123,7 +109,7 @@ const formatCalendarEvents = (items) => {
 
 
                 // On modifie aussi l'évènement pour son enregistrement ultérieur en mode période (numéro 2):
-                eventData.periodNumber = 2
+                event.periodNumber = 2
             } else
             // Si il n'y a pas déjà un marker de période
             {
@@ -134,7 +120,7 @@ const formatCalendarEvents = (items) => {
                 marker.periodMarker = true
 
                 // Évènement en mode période (numéro 1):
-                eventData.periodNumber = 1
+                event.periodNumber = 1
             }
 
 
@@ -149,27 +135,22 @@ const formatCalendarEvents = (items) => {
 
 
             // Premier jour de l'évènement
-            eventData.startingDay = true
+            event.startingDay = true
 
 
             // Fonction pour les jours supplémentaires à rajouter en évènement et markers
             for (let i = 1; i <= numberOfDays; i++) {
-                addDayEvent(eventData, marker, i, numberOfDays)
+                addDayEvent(event, marker, i, numberOfDays)
             }
         }
 
 
 
         // On rajoute l'évènement dans les events, en mode période s'il est rentré dans le if (periodEvent) au dessus.
-        if (events.some(e=> e.title === startingDate)) {
-            events = events.map(e=>{
-                if (e.title === startingDate){
-                    e.data.push(eventData)
-                }
-                return e
-            })
+        if (events[startingDate]) {
+            events[startingDate].push(event)
         } else {
-            events.push(eventDay)
+            events[startingDate] = [event]
         }
 
 
