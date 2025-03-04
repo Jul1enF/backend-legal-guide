@@ -45,7 +45,7 @@ router.get('/getEvents', async (req, res) => {
             const formatedEvents = formatCalendarEvents(items)
 
             const {events, markers} = formatedEvents
-            // console.log("event", events)
+            console.log("markers", markers)
 
             res.json({ result : true, events, markers })
         } else {
