@@ -1,7 +1,11 @@
 
 const moment = require('moment')
 
-const formatCalendarEvents = (items) => {
+const formatCalendarEvents = (allItems) => {
+    const twoMonthAgo = moment(new Date()).subtract(2, 'month').format('YYYY-MM-01')
+    const referenceDate = new Date(twoMonthAgo)
+
+    const items = allItems.filter(e=> new Date(e.start.dateTime) - referenceDate >=0 || new Date(e.start.date) - referenceDate >=0)
 
     let events = []
     let markers = {}

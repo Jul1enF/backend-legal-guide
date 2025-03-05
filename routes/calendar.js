@@ -1,7 +1,11 @@
 var express = require('express');
 var router = express.Router();
 
-const {formatCalendarEvents}= require('../modules/formatCalendarEvents')
+
+const mongoose = require('mongoose')
+const connectionString = process.env.CONNECTION_STRING
+
+const { formatCalendarEvents } = require('../modules/formatCalendarEvents')
 
 const { google } = require('googleapis');
 
@@ -29,8 +33,9 @@ const calendar = google.calendar({
 
 router.get('/getEvents', async (req, res) => {
     try {
+        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
 
-       const result = await calendar.events.list({
+        const result = await calendar.events.list({
             calendarId: calendarId,
             timeMin: new Date('2025-01-01T03:24:00').toISOString(),
             singleEvents: true,
@@ -40,21 +45,21 @@ router.get('/getEvents', async (req, res) => {
         if (result.data.items.length) {
             // Mise en forme pour react calendar
 
-            const {items} = result.data
+            const { items } = result.data
 
             const formatedEvents = formatCalendarEvents(items)
 
-            const {events, markers} = formatedEvents
-            console.log("markers", markers)
+            const { events, markers } = formatedEvents
+            // console.log("markers", markers)
 
-            res.json({ result : true, events, markers })
+            res.json({ result: true, events, markers })
         } else {
-            res.json({ result :false, message: 'No upcoming events found.' })
+            res.json({ result: false, message: 'No upcoming events found.' })
         }
 
     } catch (err) {
         console.log("err :", err)
-        res.json({ err, result :false })
+        res.json({ err, result: false })
     }
 
 })
