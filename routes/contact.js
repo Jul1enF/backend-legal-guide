@@ -8,7 +8,7 @@ router.put('/sendMessage', async (req, res)=>{
     try {
         const {names, email, phone, subject, message}=req.body
 
-        await sendContactMail(names, email, phone, subject, message, "j.furic@gmail.com")
+        await sendContactMail(names, email, phone, subject, message, "alexis@baudelinavocat.fr")
 
         res.json({result : true})
 
