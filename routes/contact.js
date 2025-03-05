@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const { sendContactMail } = require('../modules/sendContactMail')
+const { sendContactMail } = require('../modules/sendMail')
 
 
 router.put('/sendMessage', async (req, res)=>{
