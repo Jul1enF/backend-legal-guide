@@ -161,5 +161,31 @@ router.delete('/delete-user/:jwtToken', async (req, res) => {
 
 
 
+// Route pour modifier le push token d'un utilisateur
+
+router.put('/changePushToken', async (req, res) => {
+    try {
+        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+
+        const { jwtToken, push_token } = req.body
+
+        const decryptedToken = jwt.verify(jwtToken, secretToken)
+
+        const userData = await User.findOne({ token: decryptedToken.token })
+
+        if (!userData) {
+            res.json({ result: false, error: "Token de connexion non valide !" })
+        }
+        else {
+            userData.push_token = push_token
+
+            await userData.save()
+
+            res.json({ result: true })
+        }
+    } catch (err) { res.json({ err }) }
+})
+
+
 
 module.exports = router

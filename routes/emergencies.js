@@ -6,11 +6,10 @@ const User = require('../models/users')
 
 const jwt = require('jsonwebtoken')
 const secretKey = process.env.JWT_SECRET_KEY
-const publicKey = process.env.JWT_PUBLIC_KEY
 
-const uniqid = require('uniqid');
 
-// const {sendNotification} = require('../modules/sendNotification')
+const {sendNotifications} = require('../modules/sendNotifications')
+const {sendEmergencyMail} = require('../modules/sendMail')
 
 
 const mongoose = require('mongoose')
@@ -61,6 +60,33 @@ router.post('/new-emergency', async (req, res) => {
             user.emergency = savedEmergency._id
             await user.save()
         }
+
+
+
+        // Envoi d'une notification aux admins
+
+        const emergenciesCount = await Emergency.countDocuments()
+        console.log("Emergencies count", emergenciesCount)
+        const requestWord = emergenciesCount === 1 ? "demande" : "demandes"
+
+        const title = "URGENT - Demande de contact"
+
+        const message = `Nouvelle requête de ${user_firstname} ${user_name}. Motif : "${emergency_reason}".\nVous avez actuellement ${emergenciesCount} ${requestWord} de contact urgent.`
+
+        await sendNotifications(title, message)
+
+
+
+        // Envoi d'un email au cabinet
+
+        let locationString = ""
+
+        if (user_location.length > 0){
+            locationString = `${user_location[0]} ; ${user_location[1]}`
+        }
+
+        await sendEmergencyMail("alexis@baudelinavocat.fr", user_firstname, user_name, user_phone, connected, emergency_reason, user_email, locationString, media_url)
+
 
         res.json({ result: true, savedEmergency })
 
