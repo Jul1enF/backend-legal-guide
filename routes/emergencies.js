@@ -35,33 +35,12 @@ const storage = getStorage();
 
 
 
-router.post('/new-emergency/:emergencyData', async (req, res) => {
+router.post('/new-emergency', async (req, res) => {
 
     try {
         await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
 
-        const decryptedData = jwt.verify(req.params.emergencyData, publicKey)
-
-        const { user_firstname, user_name, user_email, user_phone, connected, media_link, media_type, emergency_reason, mediaExtension, mediaMimeType, user_location } = decryptedData
-
-        // Upload à Firebase si média présent
-
-        let media_url = ""
-        let media_name = ""
-
-        if (media_link) {
-            media_name = `${uniqid()}.${mediaExtension}`
-
-            const emergencyMediaRef = ref(storage, `emergenciesMedias/${media_name}`)
-
-            const metadata = {
-                contentType: mediaMimeType,
-            }
-
-            const uploadedMedia = await uploadBytes(emergencyMediaRef, req.files.emergencyMedia.data, metadata);
-
-            media_url = await getDownloadURL(uploadedMedia.ref)
-        }
+        const { user_firstname, user_name, user_email, user_phone, connected, media_type, media_name, media_url, emergency_reason, user_location } = req.body
 
 
         // Enregistrement en bdd de la demande
