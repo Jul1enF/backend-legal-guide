@@ -8,8 +8,8 @@ const jwt = require('jsonwebtoken')
 const secretKey = process.env.JWT_SECRET_KEY
 
 
-const {sendNotifications} = require('../modules/sendNotifications')
-const {sendEmergencyMail} = require('../modules/sendMail')
+const { sendNotifications } = require('../modules/sendNotifications')
+const { sendEmergencyMail } = require('../modules/sendMail')
 
 
 const mongoose = require('mongoose')
@@ -46,7 +46,7 @@ router.post('/new-emergency', async (req, res) => {
         const createdAt = new Date()
 
         const newEmergency = new Emergency({
-            user_firstname, user_name, user_email, user_phone, connected, media_url, media_type, media_name, emergency_reason, createdAt, user_location, located: user_location.length > 0 ? true : false
+            user_firstname, user_name, user_email, user_phone, connected, media_url, media_type, media_name, emergency_reason, createdAt, user_location, located: user_location.length > 0 ? true : false, last_location_date: new Date(),
         })
 
         const savedEmergency = await newEmergency.save()
@@ -73,7 +73,7 @@ router.post('/new-emergency', async (req, res) => {
 
         const message = `Nouvelle requête de ${user_firstname} ${user_name}. Motif : "${emergency_reason}".\nVous avez actuellement ${emergenciesCount} ${requestWord} de contact urgent.`
 
-        await sendNotifications(title, message)
+        // await sendNotifications(title, message)
 
 
 
@@ -81,11 +81,13 @@ router.post('/new-emergency', async (req, res) => {
 
         let locationString = ""
 
-        if (user_location.length > 0){
+        if (user_location.length > 0) {
             locationString = `${user_location[0]} ; ${user_location[1]}`
         }
 
-        await sendEmergencyMail("alexis@baudelinavocat.fr", user_firstname, user_name, user_phone, connected, emergency_reason, user_email, locationString, media_url)
+        // await sendEmergencyMail("alexis@baudelinavocat.fr", user_firstname, user_name, user_phone, connected, emergency_reason, user_email, locationString, media_url)
+
+        // await sendEmergencyMail("j.furic@gmail.com", user_firstname, user_name, user_phone, connected, emergency_reason, user_email, locationString, media_url)
 
 
         res.json({ result: true, savedEmergency })
@@ -188,7 +190,7 @@ router.get('/get-emergencies/:jwtToken', async (req, res) => {
 
         let emergencies = await Emergency.find()
 
-        if (!emergencies){
+        if (!emergencies) {
             emergencies = []
         }
 
@@ -200,6 +202,36 @@ router.get('/get-emergencies/:jwtToken', async (req, res) => {
     }
 })
 
+
+
+
+
+// Route pour actualiser la localisation d'un utilisateur
+
+router.put('/update-location', async (req, res) => {
+
+    try {
+        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+
+        const { _id, user_location } = req.body
+
+        const emergencyToUpdate = await Emergency.findOne({ _id })
+
+        if (!emergencyToUpdate){
+            res.json({ result: false, error : "No more emergency in data base" })
+        }else{
+            emergencyToUpdate.user_location = user_location
+            emergencyToUpdate.last_location_date = new Date()
+            await emergencyToUpdate.save()
+
+            res.json({ result: true})
+        }
+
+    } catch (err) {
+        console.log(err)
+        res.json({ result: false, err })
+    }
+})
 
 
 

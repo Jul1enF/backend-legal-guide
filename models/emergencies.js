@@ -13,6 +13,7 @@ const emergencySchema = mongoose.Schema({
     emergency_reason : String,
     createdAt : Date,
     user_location : Array,
+    last_location_date : Date,
 })
 
 const Emergency = mongoose.model('emergencies', emergencySchema)
