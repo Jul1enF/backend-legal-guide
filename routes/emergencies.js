@@ -52,15 +52,6 @@ router.post('/new-emergency', async (req, res) => {
         const savedEmergency = await newEmergency.save()
 
 
-        // Si l'utilisateur était connecté, inscription en clef étrangère de sa demande de contact
-
-        if (connected) {
-            const user = await User.findOne({ email: user_email })
-
-            user.emergency = savedEmergency._id
-            await user.save()
-        }
-
 
 
         // Envoi d'une notification aux admins
@@ -159,9 +150,6 @@ router.delete('/suppress-emergency/:_id', async (req, res) => {
         if (suppress.deletedCount !== 1) {
             return res.json({ result: false })
         }
-
-        // Suppression de la clef étrangère d'un document utilisateur si celui existe
-        const update = await User.updateOne({ emergency: _id }, { $unset: { emergency: _id } })
 
         res.json({ result: true })
 

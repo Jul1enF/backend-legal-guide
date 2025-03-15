@@ -11,7 +11,6 @@ const userSchema = mongoose.Schema({
     token : String,
     push_token : String,
     bookmarks : [{ type: mongoose.Schema.Types.ObjectId, ref: 'articles' }],
-    emergency : { type: mongoose.Schema.Types.ObjectId, ref: 'emergencies' }
 })
 
 const User = mongoose.model('users', userSchema)
