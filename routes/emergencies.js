@@ -212,6 +212,8 @@ router.put('/update-location', async (req, res) => {
             emergencyToUpdate.last_location_date = new Date()
             await emergencyToUpdate.save()
 
+            console.log("DATE", new Date())
+
             res.json({ result: true})
         }
 
