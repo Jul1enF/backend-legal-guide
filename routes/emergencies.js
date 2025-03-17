@@ -196,12 +196,44 @@ router.get('/get-emergencies/:jwtToken', async (req, res) => {
 
 // Route pour actualiser la localisation d'un utilisateur
 
-router.post('/update-location', async (req, res) => {
+// router.post('/update-location', async (req, res) => {
+
+//     try {
+//         await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+
+//         const { _id, user_location } = req.body
+
+//         const emergencyToUpdate = await Emergency.findOne({ _id })
+
+//         if (!emergencyToUpdate){
+//             res.json({ result: false, error : "No more emergency in data base" })
+//         }else{
+//             emergencyToUpdate.user_location = user_location
+//             emergencyToUpdate.last_location_date = new Date()
+//             await emergencyToUpdate.save()
+
+//             console.log("DATE", new Date())
+
+//             res.json({ result: true})
+//         }
+
+//     } catch (err) {
+//         console.log(err)
+//         res.json({ result: false, err })
+//     }
+// })
+
+
+// Route get pour actualiser la localisation d'un utilisateur
+
+router.get('/update-location/:lat/:long/:_id', async (req, res) => {
 
     try {
         await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
 
-        const { _id, user_location } = req.body
+        const { lat, long, _id } = req.params
+
+        const user_location = [Number(lat), Number(long)]
 
         const emergencyToUpdate = await Emergency.findOne({ _id })
 
