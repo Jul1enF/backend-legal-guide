@@ -196,7 +196,7 @@ router.get('/get-emergencies/:jwtToken', async (req, res) => {
 
 // Route pour actualiser la localisation d'un utilisateur
 
-router.put('/update-location', async (req, res) => {
+router.post('/update-location', async (req, res) => {
 
     try {
         await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
