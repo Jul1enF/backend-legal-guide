@@ -39,14 +39,14 @@ router.post('/new-emergency', async (req, res) => {
     try {
         await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
 
-        const { user_firstname, user_name, user_email, user_phone, connected, media_type, media_name, media_url, emergency_reason, user_location } = req.body
+        const { user_firstname, user_name, user_email, user_phone, connected, media_type, media_name, media_url, emergency_reason, user_location, device_platform } = req.body
 
 
         // Enregistrement en bdd de la demande
         const createdAt = new Date()
 
         const newEmergency = new Emergency({
-            user_firstname, user_name, user_email, user_phone, connected, media_url, media_type, media_name, emergency_reason, createdAt, user_location, located: user_location.length > 0 ? true : false, last_location_date: new Date(),
+            user_firstname, user_name, user_email, user_phone, connected, media_url, media_type, media_name, emergency_reason, createdAt, user_location, located: user_location.length > 0 ? true : false, last_location_date: new Date(), device_platform,
         })
 
         const savedEmergency = await newEmergency.save()
