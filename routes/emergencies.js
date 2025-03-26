@@ -37,7 +37,10 @@ const storage = getStorage();
 router.post('/new-emergency', async (req, res) => {
 
     try {
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if ( mongoose.connection.readyState !== 1 ){
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
         const { user_firstname, user_name, user_email, user_phone, connected, media_type, media_name, media_url, emergency_reason, user_location, device_platform } = req.body
 
@@ -97,7 +100,10 @@ router.post('/new-emergency', async (req, res) => {
 // Route pour vérifier la présence d'une demande d'urgence
 router.get('/check-emergency/:emergency_id', async (req, res) => {
     try {
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if ( mongoose.connection.readyState !== 1 ){
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
         const { emergency_id } = req.params
 
@@ -129,7 +135,10 @@ router.get('/check-emergency/:emergency_id', async (req, res) => {
 
 router.delete('/suppress-emergency/:_id', async (req, res) => {
     try {
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if ( mongoose.connection.readyState !== 1 ){
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
         const { _id } = req.params
 
@@ -166,7 +175,10 @@ router.delete('/suppress-emergency/:_id', async (req, res) => {
 
 router.get('/get-emergencies/:jwtToken', async (req, res) => {
     try {
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if ( mongoose.connection.readyState !== 1 ){
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
         const { jwtToken } = req.params
 
@@ -198,7 +210,10 @@ router.get('/get-emergencies/:jwtToken', async (req, res) => {
 router.get('/update-location/:lat/:long/:_id', async (req, res) => {
 
     try {
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if ( mongoose.connection.readyState !== 1 ){
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
         const { lat, long, _id } = req.params
 

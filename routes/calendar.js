@@ -33,7 +33,10 @@ const calendar = google.calendar({
 
 router.get('/getEvents', async (req, res) => {
     try {
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if (mongoose.connection.readyState !== 1) {
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
         const result = await calendar.events.list({
             calendarId: calendarId,

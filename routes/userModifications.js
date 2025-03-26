@@ -16,7 +16,10 @@ const connectionString = process.env.CONNECTION_STRING
 
 router.put('/addBookmark', async (req, res) => {
     try {
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if ( mongoose.connection.readyState !== 1 ){
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
 
         const { _id, jwtToken } = req.body
@@ -48,7 +51,10 @@ router.put('/addBookmark', async (req, res) => {
 
 router.put('/removeBookmark', async (req, res) => {
     try {
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if ( mongoose.connection.readyState !== 1 ){
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
 
         const { _id, jwtToken } = req.body
@@ -81,7 +87,10 @@ router.put('/removeBookmark', async (req, res) => {
 
 router.put('/modify-user', async (req, res) => {
     try {
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if ( mongoose.connection.readyState !== 1 ){
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
 
         const { name, firstname, email, oldPassword, password, jwtToken, phone } = req.body
@@ -130,7 +139,10 @@ router.put('/modify-user', async (req, res) => {
 router.delete('/delete-user/:jwtToken', async (req, res) => {
     try {
 
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if ( mongoose.connection.readyState !== 1 ){
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
 
         const { jwtToken } = req.params
@@ -165,7 +177,10 @@ router.delete('/delete-user/:jwtToken', async (req, res) => {
 
 router.put('/changePushToken', async (req, res) => {
     try {
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if ( mongoose.connection.readyState !== 1 ){
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
         const { jwtToken, push_token } = req.body
 

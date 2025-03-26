@@ -39,7 +39,10 @@ const storage = getStorage();
 router.get('/getArticles', async (req, res) => {
     try {
 
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if ( mongoose.connection.readyState !== 1 ){
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
         const articles = await Article.find()
 
@@ -66,7 +69,10 @@ router.get('/getArticles', async (req, res) => {
 router.post('/save-article/:postData', async (req, res) => {
     try {
 
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if ( mongoose.connection.readyState !== 1 ){
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
         const decryptedData = jwt.verify(req.params.postData, publicKey)
 
@@ -167,7 +173,10 @@ router.post('/save-article/:postData', async (req, res) => {
 router.delete('/delete-article/:jwtToken/:_id', async (req, res) => {
     try {
 
-        await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        if ( mongoose.connection.readyState !== 1 ){
+            console.log("NO DB CONNEXION")
+            await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
+        }
 
 
         const { jwtToken, _id } = req.params
