@@ -67,7 +67,7 @@ router.post('/new-emergency', async (req, res) => {
 
         const message = `Nouvelle requête de ${user_firstname} ${user_name}. Motif : "${emergency_reason}".\nVous avez actuellement ${emergenciesCount} ${requestWord} de contact urgent.`
 
-        // await sendNotifications(title, message)
+        await sendNotifications(title, message)
 
 
 
@@ -79,7 +79,7 @@ router.post('/new-emergency', async (req, res) => {
             locationString = `${user_location[0]} ; ${user_location[1]}`
         }
 
-        // await sendEmergencyMail("alexis@baudelinavocat.fr", user_firstname, user_name, user_phone, connected, emergency_reason, user_email, locationString, media_url)
+        await sendEmergencyMail("alexis@baudelinavocat.fr", user_firstname, user_name, user_phone, connected, emergency_reason, user_email, locationString, media_url)
 
         // await sendEmergencyMail("j.furic@gmail.com", user_firstname, user_name, user_phone, connected, emergency_reason, user_email, locationString, media_url)
 
