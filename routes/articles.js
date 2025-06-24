@@ -103,8 +103,6 @@ router.post('/save-article/:postData', async (req, res) => {
 
             articleData.img_link = firebasePictureUrl
             articleData.img_name = img_name
-        }else{
-            articleData.img_name = ""
         }
 
 
