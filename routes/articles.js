@@ -43,8 +43,7 @@ router.get('/getArticles', async (req, res) => {
             console.log("NO DB CONNEXION")
             await mongoose.connect(connectionString, { connectTimeoutMS: 6000 })
         }
-console.log("HEADERS :", req.headers)
-    console.log("ORIGIN :", req.header('Origin'))
+
         const articles = await Article.find()
 
         if (articles) {
