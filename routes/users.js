@@ -12,6 +12,14 @@ const secretToken = process.env.JWT_SECRET_KEY
 
 
 
+// Route pour obtenir la version minimum de l'app à avoir
+
+router.get('/getAppMinimumVersion', (req, res)=>{
+  res.json({appMinimumVersion : "1.0.0"})
+})
+
+
+
 
 // Route signup pour s'inscrire
 
